@@ -32,7 +32,6 @@ function GenerateDBScript([string]$serverName, [string]$dbname, [string]$scriptp
   $options.ScriptSchema = $true
   $options.ScriptData = $false
   $options.WithDependencies = $true
-  $options.
 
   # Set options for SMO.Scripter
   $scripter.Options = $options
@@ -46,6 +45,14 @@ function GenerateDBScript([string]$serverName, [string]$dbname, [string]$scriptp
    $collection.Add($item.Urn)
    Write-Host $item.Name
   }
+
+  # Add views
+  $item = New-Object Microsoft.SqlServer.Management.Smo.View
+  foreach ($item in $database.Views){
+   $collection.Add($item.Urn)
+   Write-Host $item.Name
+  }
+   
   
   # Dump to file
   $scripter.Script($collection)
