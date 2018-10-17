@@ -27,10 +27,9 @@ function GenerateDBScript([string]$serverName, [string]$dbname, [string]$scriptp
   $options.IncludeHeaders = $false
   $options.ToFileOnly = $true
   $options.AppendToFile = $false
-  $options.ScriptDrops = $true
+  $options.ScriptDrops = $false
   $options.FileName = $scriptpath +'\'+ $dbname + ".sql"
   $options.ScriptSchema = $true
-  $options.ScriptData = $false
   $options.WithDependencies = $true
 
   # Set options for SMO.Scripter
@@ -41,9 +40,10 @@ function GenerateDBScript([string]$serverName, [string]$dbname, [string]$scriptp
  
   # Add tables
   $item = New-Object Microsoft.SqlServer.Management.Smo.Table
+
   foreach ($item in $database.Tables){
-   $collection.Add($item.Urn)
-   Write-Host $item.Name
+    $collection.Add($item.Urn)
+    Write-Host $item.Name
   }
 
   # Add views
@@ -52,8 +52,7 @@ function GenerateDBScript([string]$serverName, [string]$dbname, [string]$scriptp
    $collection.Add($item.Urn)
    Write-Host $item.Name
   }
-   
-  
+ 
   # Dump to file
   $scripter.Script($collection)
 } 
