@@ -6,9 +6,12 @@
 
 function GenerateDBScript([string]$serverName, [string]$dbname, [string]$scriptpath)
 {
+    # Loading required libraries
     [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SMO") | Out-Null
     [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SmoExtended") | Out-Null
     [System.Reflection.Assembly]::LoadWithPartialName("System.Data") | Out-Null
+    
+    # Export datbase definition 
     $server = New-Object "Microsoft.SqlServer.Management.Smo.Server" $serverName
     $server.SetDefaultInitFields([Microsoft.SqlServer.Management.Smo.View], "IsSystemObject")
     $database = New-Object "Microsoft.SqlServer.Management.Smo.Database"
@@ -17,6 +20,7 @@ function GenerateDBScript([string]$serverName, [string]$dbname, [string]$scriptp
     $options.FileName = $scriptpath +'\'+ $dbname + ".sql"
     $database.Script($options)
 
+    # Options for DDL transfer
     $options.WithDependencies = $true
     $options.IncludeIfNotExists = $false
     $options.ScriptBatchTerminator = $true
@@ -31,7 +35,8 @@ function GenerateDBScript([string]$serverName, [string]$dbname, [string]$scriptp
     $options.IncludeDatabaseContext = $true
     $options.ExtendedProperties = $true
     $options.AppendToFile = $true
-
+    
+    # Transfer
     $transfer = New-Object "Microsoft.SqlServer.Management.Smo.Transfer"
     $transfer.Database = $database
     $transfer.Options = $options
